@@ -117,7 +117,7 @@ P _newMemberDeserializeProp<P>(
 }
 
 Id _newMemberGetId(NewMember object) {
-  return object.id;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _newMemberGetLinks(NewMember object) {
@@ -277,8 +277,24 @@ extension NewMemberQueryFilter
     });
   }
 
+  QueryBuilder<NewMember, NewMember, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<NewMember, NewMember, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
   QueryBuilder<NewMember, NewMember, QAfterFilterCondition> idEqualTo(
-      Id value) {
+      Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -288,7 +304,7 @@ extension NewMemberQueryFilter
   }
 
   QueryBuilder<NewMember, NewMember, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -301,7 +317,7 @@ extension NewMemberQueryFilter
   }
 
   QueryBuilder<NewMember, NewMember, QAfterFilterCondition> idLessThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -314,8 +330,8 @@ extension NewMemberQueryFilter
   }
 
   QueryBuilder<NewMember, NewMember, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

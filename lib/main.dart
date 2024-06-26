@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
 import 'home_page.dart';
 import 'new_member.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Isar and open the NewMember collection
-  final dir = await getApplicationDocumentsDirectory();
-  final isar = await Isar.open(
-    [NewMemberSchema],
-    directory: dir.path,
-  );
+
+  // Initialize Isar using NewMemberDatabase
+  final isar = await NewMemberDatabase.initialize();
 
   runApp(MainApp(isar: isar));
 }
