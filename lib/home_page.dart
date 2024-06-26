@@ -1,10 +1,11 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, file_names
-
 import 'package:flutter/material.dart';
-
+import 'package:isar/isar.dart';
+import 'new_member.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Isar isar;
+
+  const HomePage({super.key, required this.isar});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,37 +16,42 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('資料庫'),
+        title: const Text('資料庫'),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return NewMember();
+                  return NewMemberDialog(isar: widget.isar);
                 },
               );
             },
           ),
         ],
       ),
-      body: Center(
+      body: const Center(
         child: Text('Press the plus button!'),
       ),
     );
   }
 }
 
-class NewMember extends StatefulWidget {
+class NewMemberDialog extends StatefulWidget {
+  final Isar isar;
+
+  const NewMemberDialog({super.key, required this.isar});
+
   @override
-  _NewMemberState createState() => _NewMemberState();
+  _NewMemberDialogState createState() => _NewMemberDialogState();
 }
 
-class _NewMemberState extends State<NewMember> {
+class _NewMemberDialogState extends State<NewMemberDialog> {
   bool isMale = true;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
+  final TextEditingController nameController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -54,10 +60,11 @@ class _NewMemberState extends State<NewMember> {
       firstDate: DateTime(1900),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != selectedDate)
+    if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
       });
+    }
   }
 
   Future<void> _selectTime(BuildContext context) async {
@@ -65,22 +72,40 @@ class _NewMemberState extends State<NewMember> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    if (picked != null && picked != selectedTime)
+    if (picked != null && picked != selectedTime) {
       setState(() {
         selectedTime = picked;
-      }
+      });
+      // ignore: avoid_print
+      print('Selected Time: ${picked.format(context)}');
+    }
+  }
+
+  void _saveMember() async {
+    final newMember = NewMember(
+      name: nameController.text,
+      isMale: isMale,
+      birthday: selectedDate,
+      time: NewMember.timeOfDayToString(selectedTime), // Convert TimeOfDay to String
     );
+
+    await widget.isar.writeTxn(() async {
+      await widget.isar.newMembers.put(newMember);
+    });
+
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Add New Member'),
+      title: const Text('Add New Member'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
-            decoration: InputDecoration(
+            controller: nameController,
+            decoration: const InputDecoration(
               labelText: 'Name',
             ),
           ),
@@ -104,7 +129,7 @@ class _NewMemberState extends State<NewMember> {
               Text('Birthday: ${selectedDate != null ? "${selectedDate!.toLocal()}".split(' ')[0] : "Not set"}'),
               TextButton(
                 onPressed: () => _selectDate(context),
-                child: Text('Select Date'),
+                child: const Text('Select Date'),
               ),
             ],
           ),
@@ -114,7 +139,7 @@ class _NewMemberState extends State<NewMember> {
               Text('Time: ${selectedTime != null ? selectedTime!.format(context) : "Not set"}'),
               TextButton(
                 onPressed: () => _selectTime(context),
-                child: Text('Select Time'),
+                child: const Text('Select Time'),
               ),
             ],
           ),
@@ -125,14 +150,11 @@ class _NewMemberState extends State<NewMember> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         TextButton(
-          onPressed: () {
-            // Add your save logic here
-            Navigator.of(context).pop();
-          },
-          child: Text('Save'),
+          onPressed: _saveMember,
+          child: const Text('Save'),
         ),
       ],
     );
