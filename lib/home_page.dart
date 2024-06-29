@@ -14,8 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Stream<List<NewMember>> memberStream;
-  bool isPressed = false;
-  String searchQuery = '';
+  int? selectedIndex;
 
   @override
   void initState() {
@@ -36,6 +35,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _deleteMember(int memberId) async {
+  await widget.isar.writeTxn(() async {
+    await widget.isar.newMembers.delete(memberId);
+  });
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,24 +48,46 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('資料庫'),
         actions: [
+                    if (selectedIndex != null) // Show delete icon if a member is selected
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Delete Member'),
+                      content: const Text('Are you sure you want to delete this member?'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Delete'),
+                          onPressed: () async {
+                            final selectedMember = await widget.isar.newMembers.get(selectedIndex!);
+                            if (selectedMember != null) {
+                              await _deleteMember(selectedMember.id!);
+                            }
+                            setState(() {
+                              memberStream = widget.isar.newMembers.where().findAll().asStream();
+                              selectedIndex = null; // Clear selected index
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
-              onTapDown: (_) {
-                setState(() {
-                  isPressed = true;
-                });
-              },
-              onTapUp: (_) {
-                setState(() {
-                  isPressed = false;
-                });
-              },
-              onTapCancel: () {
-                setState(() {
-                  isPressed = false;
-                });
-              },
               onTap: () {
                 showDialog(
                   context: context,
@@ -68,43 +95,26 @@ class _HomePageState extends State<HomePage> {
                     return NewMemberDialog(isar: widget.isar);
                   },
                 ).then((_) {
-                  // Refresh the stream after adding a new member
                   setState(() {
-                    memberStream =
-                        widget.isar.newMembers.where().findAll().asStream();
+                    memberStream = widget.isar.newMembers.where().findAll().asStream();
+                    selectedIndex = null; // Clear selected index
                   });
                 });
               },
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 100),
-                width: isPressed ? 40 : 50,
-                height: isPressed ? 40 : 50,
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 172, 172, 172),
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10.0,
-                      offset: Offset(2, 2),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.add,
-                  color: Color.fromARGB(255, 34, 74, 255),
-                  size: 24,
-                ),
+              child: const Icon(
+                Icons.add,
+                size: 30,
               ),
             ),
-          )
+          ),
+
         ],
       ),
       body: Column(
         children: [
           Expanded(
             child: StreamBuilder<List<NewMember>>(
-              stream: _getFilteredMembersStream(searchQuery),
+              stream: _getFilteredMembersStream(''), // Pass your search query here
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -125,12 +135,25 @@ class _HomePageState extends State<HomePage> {
                       itemCount: members.length,
                       itemBuilder: (context, index) {
                         final member = members[index];
-                        return ListTile(
-                          title: Text(member.name),
-                          subtitle: Text(
-                            'Sex: ${member.isMale ? "Male" : "Female"}, '
-                            'Birthday: ${member.birthday != null ? member.birthday!.toLocal().toString().split(' ')[0] : "Not set"}, '
-                            'Time: ${member.time ?? "Not set"}',
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index; // Update selected index
+                            });
+                            print('Selected Member ID: ${member.id}');
+                          },
+                          child: Container(
+                            color: selectedIndex == index
+                                ? Colors.blue.withOpacity(0.3) // Highlight selected item
+                                : Colors.transparent,
+                            child: ListTile(
+                              title: Text(member.name),
+                              subtitle: Text(
+                                'Sex: ${member.isMale ? "Male" : "Female"}, '
+                                'Birthday: ${member.birthday != null ? member.birthday!.toLocal().toString().split(' ')[0] : "Not set"}, '
+                                'Time: ${member.time ?? "Not set"}',
+                              ),
+                            ),
                           ),
                         );
                       },
@@ -188,6 +211,7 @@ class _HomePageState extends State<HomePage> {
 
 class MemberSearchDelegate extends SearchDelegate {
   final Isar isar;
+  int? selectedIndex; // Add selectedIndex here
 
   MemberSearchDelegate(this.isar);
 
@@ -246,17 +270,25 @@ class MemberSearchDelegate extends SearchDelegate {
             itemCount: members.length,
             itemBuilder: (context, index) {
               final member = members[index];
-              return ListTile(
-                title: Text(member.name),
-                subtitle: Text(
-                  'Sex: ${member.isMale ? "Male" : "Female"}, '
-                  'Birthday: ${member.birthday != null ? member.birthday!.toLocal().toString().split(' ')[0] : "Not set"}, '
-                  'Time: ${member.time ?? "Not set"}',
-                ),
+              return GestureDetector(
                 onTap: () {
-                  // Do something when a member is tapped
                   close(context, member);
+                  selectedIndex = index; // Update selected index
+                  print('Selected Member ID: ${member.id}');
                 },
+                child: Container(
+                  color: selectedIndex == index
+                      ? Colors.blue.withOpacity(0.3) // Highlight selected item
+                      : Colors.transparent,
+                  child: ListTile(
+                    title: Text(member.name),
+                    subtitle: Text(
+                      'Sex: ${member.isMale ? "Male" : "Female"}, '
+                      'Birthday: ${member.birthday != null ? member.birthday!.toLocal().toString().split(' ')[0] : "Not set"}, '
+                      'Time: ${member.time ?? "Not set"}',
+                    ),
+                  ),
+                ),
               );
             },
             separatorBuilder: (context, index) => const Divider(
