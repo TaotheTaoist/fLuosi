@@ -185,20 +185,24 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                     ),
                   ),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.favorite),
-                      onPressed: () {},
-                      color: Colors.white,
+                 Expanded(
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          '紫薇',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: IconButton(
-                      icon: const Icon(Icons.person),
-                      onPressed: () {},
-                      color: Colors.white,
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () {},
+                        child: const Text(
+                          '八字',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),

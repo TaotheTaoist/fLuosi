@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'home_page.dart';
 import 'new_member.dart';
+import 'package:learn1/lunarCal/lunar_date_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,8 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(isar: isar),
+      //home: HomePage(isar: isar),
+     home: LunarDateScreen(),
     );
   }
 }
