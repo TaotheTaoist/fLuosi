@@ -1,8 +1,4 @@
-import 'package:learn1/Lunar.dart';
-import 'package:learn1/calendar/eightChar/Yun.dart';
-import 'package:learn1/calendar/eightChar/LiuNain.dart';
-import 'package:learn1/calendar/Util/LunarUtil.dart';
-import 'package:learn1/calendar/eightchar/XiaoYun.dart';
+import '../../lunar.dart';
 
 
 /// 大运

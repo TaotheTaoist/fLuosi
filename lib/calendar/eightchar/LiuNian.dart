@@ -1,7 +1,4 @@
-import 'package:learn1/Lunar.dart';
-import 'package:learn1/calendar/eightChar/DaYun.dart';
-import 'package:learn1/calendar/util/LunarUtil.dart';
-import 'package:learn1/calendar/eightchar/LiuYue.dart';
+import '../../lunar.dart';
 /// 流年
 /// @author 6tail
 class LiuNian {
