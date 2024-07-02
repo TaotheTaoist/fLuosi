@@ -22,8 +22,12 @@ class LunarDateScreen extends StatelessWidget {
     // Create DaYun instance
     DaYun daYun = DaYun(yun, 1);
     
-    Lunar todayDate = Lunar.fromDate(DateTime.now());
+    Lunar todayDate = Lunar.fromDate(DateTime(1990,4,16,14,37));
 
+    // Print the full string of todayDate
+    
+     print('Today Date (Lunar): ${todayDate.getBaZi()}');
+      print('Today Date (Lunar): ${todayDate.getDayGan()}');
     //指定阴历的某一天
     Lunar specificDate = Lunar.fromYmd(1986, 4, 21);
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'new_member.dart';
 import 'new_member_dialog.dart';
+import 'baxi_page.dart';
 
 class HomePage extends StatefulWidget {
   final Isar isar;
@@ -14,7 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Stream<List<NewMember>> memberStream;
-  int? selectedIndex;
+  int? selectedMemberId;
 
   @override
   void initState() {
@@ -36,10 +37,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _deleteMember(int memberId) async {
-  await widget.isar.writeTxn(() async {
-    await widget.isar.newMembers.delete(memberId);
-  });
-}
+    final member = await widget.isar.newMembers.get(memberId);
+    if (member == null) {
+      print('Member with ID $memberId does not exist');
+      return;
+    }
+
+    try {
+      await widget.isar.writeTxn(() async {
+        await widget.isar.newMembers.delete(memberId);
+      });
+      print('Member with ID $memberId deleted successfully');
+    } catch (e) {
+      print('Failed to delete member with ID $memberId: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +60,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('資料庫'),
         actions: [
-                    if (selectedIndex != null) // Show delete icon if a member is selected
+          if (selectedMemberId != null) // Show delete icon if a member is selected
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
@@ -68,13 +80,12 @@ class _HomePageState extends State<HomePage> {
                         TextButton(
                           child: const Text('Delete'),
                           onPressed: () async {
-                            final selectedMember = await widget.isar.newMembers.get(selectedIndex!);
-                            if (selectedMember != null) {
-                              await _deleteMember(selectedMember.id!);
+                            if (selectedMemberId != null) {
+                              await _deleteMember(selectedMemberId!);
                             }
                             setState(() {
                               memberStream = widget.isar.newMembers.where().findAll().asStream();
-                              selectedIndex = null; // Clear selected index
+                              selectedMemberId = null; // Clear selected member ID
                             });
                             Navigator.of(context).pop();
                           },
@@ -97,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 ).then((_) {
                   setState(() {
                     memberStream = widget.isar.newMembers.where().findAll().asStream();
-                    selectedIndex = null; // Clear selected index
+                    selectedMemberId = null; // Clear selected member ID after adding new member
                   });
                 });
               },
@@ -107,7 +118,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-
         ],
       ),
       body: Column(
@@ -138,12 +148,12 @@ class _HomePageState extends State<HomePage> {
                         return GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedIndex = index; // Update selected index
+                              selectedMemberId = member.id; // Update selected member ID
                             });
                             print('Selected Member ID: ${member.id}');
                           },
                           child: Container(
-                            color: selectedIndex == index
+                            color: selectedMemberId == member.id
                                 ? Colors.blue.withOpacity(0.3) // Highlight selected item
                                 : Colors.transparent,
                             child: ListTile(
@@ -185,24 +195,37 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                     ),
                   ),
-                 Expanded(
-                      child: TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          '紫薇',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        '紫薇',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          '八字',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                  ),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        if (selectedMemberId != null) {
+                          widget.isar.newMembers.get(selectedMemberId!).then((member) {
+                            if (member != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => BaziPage(birthday: member.birthday),
+                                ),
+                              );
+                            }
+                          });
+                        }
+                      },
+                      child: const Text(
+                        '八字',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -215,7 +238,7 @@ class _HomePageState extends State<HomePage> {
 
 class MemberSearchDelegate extends SearchDelegate {
   final Isar isar;
-  int? selectedIndex; // Add selectedIndex here
+  int? selectedMemberId; // Add selectedMemberId here
 
   MemberSearchDelegate(this.isar);
 
@@ -277,11 +300,11 @@ class MemberSearchDelegate extends SearchDelegate {
               return GestureDetector(
                 onTap: () {
                   close(context, member);
-                  selectedIndex = index; // Update selected index
+                  selectedMemberId = member.id; // Update selected member ID
                   print('Selected Member ID: ${member.id}');
                 },
                 child: Container(
-                  color: selectedIndex == index
+                  color: selectedMemberId == member.id
                       ? Colors.blue.withOpacity(0.3) // Highlight selected item
                       : Colors.transparent,
                   child: ListTile(
