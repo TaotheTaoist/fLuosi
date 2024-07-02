@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,7 +10,7 @@ class NewMember {
   String name;
   bool isMale;
   DateTime? birthday;
-  String? time;
+  String? time; // Store time as a string
 
   NewMember({
     required this.name,

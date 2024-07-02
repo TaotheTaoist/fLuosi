@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:learn1/calendar/Lunar.dart' as lunar;
 
+import 'new_member.dart'; // Import NewMember class
+
 class BaziPage extends StatelessWidget {
   final DateTime? birthday;
+  final String? time;
 
-  const BaziPage({Key? key, required this.birthday}) : super(key: key);
+  const BaziPage({Key? key, required this.birthday, this.time}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,22 @@ class BaziPage extends StatelessWidget {
       );
     }
 
-    lunar.Lunar lunarDate = lunar.Lunar.fromDate(birthday!);
+    // Parse the time if available
+    TimeOfDay? parsedTime = NewMember.stringToTimeOfDay(time);
+
+    // Combine date and time for Lunar calculation
+    DateTime combinedDateTime = DateTime(
+      birthday!.year,
+      birthday!.month,
+      birthday!.day,
+      parsedTime?.hour ?? 0,
+      parsedTime?.minute ?? 0,
+    );
+
+    lunar.Lunar lunarDate = lunar.Lunar.fromDate(combinedDateTime);
+
+    print('Parsed Time: $parsedTime');
+    print('Combined DateTime: $combinedDateTime');
 
     return Scaffold(
       appBar: AppBar(

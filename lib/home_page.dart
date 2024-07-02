@@ -151,6 +151,7 @@ class _HomePageState extends State<HomePage> {
                               selectedMemberId = member.id; // Update selected member ID
                             });
                             print('Selected Member ID: ${member.id}');
+                            
                           },
                           child: Container(
                             color: selectedMemberId == member.id
@@ -213,7 +214,10 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => BaziPage(birthday: member.birthday),
+                                  builder: (context) => BaziPage(
+                                    birthday: member.birthday,
+                                    time: member.time,
+                                    ),
                                 ),
                               );
                             }
