@@ -47,17 +47,19 @@ class _BaziPageState extends State<BaziPage> {
 
     lunar.Lunar lunarDate = lunar.Lunar.fromDate(combinedDateTime);
 
-    Widget buildCell(String text) {
-      return Container(
-        padding: const EdgeInsets.all(8.0),
-        alignment: Alignment.center,
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 14),
-          overflow: TextOverflow.ellipsis,
-        ),
-      );
-    }
+  Widget buildCell(String text) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
+    alignment: Alignment.center,
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 14),
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
+}
+
+
 
     Widget buildDropdownCell() {
       return Container(
