@@ -47,19 +47,18 @@ class _BaziPageState extends State<BaziPage> {
 
     lunar.Lunar lunarDate = lunar.Lunar.fromDate(combinedDateTime);
 
-  Widget buildCell(String text) {
-  return Container(
-    padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
-    alignment: Alignment.center,
-    child: Text(
-      text,
-      style: const TextStyle(fontSize: 14),
-      overflow: TextOverflow.ellipsis,
-    ),
-  );
-}
-
-
+    // First table buildCell
+    Widget buildCell(String text) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
+        alignment: Alignment.center,
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 14),
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
+    }
 
     Widget buildDropdownCell() {
       return Container(
@@ -100,6 +99,39 @@ class _BaziPageState extends State<BaziPage> {
       );
     }
 
+    // Custom cell widget for complex string layout
+    Widget buildCustomCell(String mainText, List<String> sideTexts) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
+        alignment: Alignment.center,
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: Text(
+                mainText,
+                style: const TextStyle(fontSize: 14),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: sideTexts.map((text) {
+                  return Text(
+                    text,
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     List<TableRow> tableRows = [
       buildRow([
         buildCell('日期'),
@@ -125,10 +157,10 @@ class _BaziPageState extends State<BaziPage> {
       ]),
       buildRow([
         buildCell('天干'),
-        buildCell(lunarDate.getDayGan()),
-        buildCell(lunarDate.getDayGan()),
-        buildCell(lunarDate.getMonthGan()),
-        buildCell(lunarDate.getYearGan()),
+        buildCustomCell(lunarDate.getDayGan(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getDayGan(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getMonthGan(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getYearGan(), ['傷', '官', '財']),
         buildCell(''),
         buildCell(''),
         buildCell(''),
@@ -136,10 +168,10 @@ class _BaziPageState extends State<BaziPage> {
       ]),
       buildRow([
         buildCell('地支'),
-        buildCell(lunarDate.getDayZhi()),
-        buildCell(lunarDate.getDayZhi()),
-        buildCell(lunarDate.getMonthZhi()),
-        buildCell(lunarDate.getYearZhi()),
+        buildCustomCell(lunarDate.getDayZhi(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getDayZhi(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getMonthZhi(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getYearZhi(), ['傷', '官', '財']),
         buildCell(''),
         buildCell(''),
         buildCell(''),
@@ -158,8 +190,8 @@ class _BaziPageState extends State<BaziPage> {
       ]),
       buildRow([
         buildCell(''),
-        buildCell(lunarDate.getYearGan()),
-        buildCell(lunarDate.getYearZhi()),
+        buildCustomCell(lunarDate.getYearGan(), ['傷', '官', '財']),
+        buildCustomCell(lunarDate.getYearZhi(), ['傷', '官', '財']),
         buildCell(''),
         buildCell(''),
         buildCell(''),
@@ -169,30 +201,80 @@ class _BaziPageState extends State<BaziPage> {
       ]),
     ];
 
-    List<Widget> longRow = [
-      buildCell('神煞'),
-      buildCell('k'),
-      buildCell('/'),
-      buildCell('/'),
-      buildCell('/'),
-      buildCell('/'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('/'),
-      buildCell('/'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('/'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('/'),
-      buildCell('?'),
-      buildCell('?'),
-      buildCell('?'),
+    // Second table buildCell
+    Widget buildLongCell(String mainText, List<String> sideTexts) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
+        alignment: Alignment.center,
+        constraints: const BoxConstraints(minWidth: 30.0), // Adjust minWidth as needed
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            children: [
+              Text(
+                mainText,
+                style: const TextStyle(fontSize: 14),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(width: 4),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: sideTexts.map((text) {
+                  return Text(
+                    text,
+                    style: const TextStyle(fontSize: 12),
+                    overflow: TextOverflow.ellipsis,
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    TableRow buildLongRow(List<Widget> cells) {
+      return TableRow(
+        children: cells,
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: Colors.black),
+          ),
+        ),
+      );
+    }
+
+    List<TableRow> longTableRows = [
+      buildLongRow([
+        buildLongCell('月干', ['k', '官', '財']),
+        buildLongCell('k', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+      ]),
+      buildLongRow([
+        buildLongCell('月支', ['k', '官', '財']),
+        buildLongCell('k', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('/', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+        buildLongCell('?', ['官', '財']),
+      ]),
     ];
 
     return Scaffold(
@@ -201,19 +283,18 @@ class _BaziPageState extends State<BaziPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
               Table(
                 border: TableBorder.all(color: Colors.black),
                 children: tableRows,
               ),
-              const SizedBox(height: 20),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: longRow,
-                ),
+              const SizedBox(height: 5),
+              Divider(),
+              Table(
+                border: TableBorder.all(color: Colors.black),
+                children: longTableRows,
               ),
             ],
           ),
