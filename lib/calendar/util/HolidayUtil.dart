@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import '../Holiday.dart';
 
 /// 法定节假日工具（默认自2001年12月29日起）

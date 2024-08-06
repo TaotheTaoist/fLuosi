@@ -1,4 +1,6 @@
 
+// ignore_for_file: constant_identifier_names
+
 import 'package:learn1/calendar/eightchar/Yun.dart';
 import 'package:learn1/calendar/util/LunarUtil.dart';
 import 'Lunar.dart';

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'new_member.dart';
@@ -217,6 +219,7 @@ class _HomePageState extends State<HomePage> {
                                   builder: (context) => BaziPage(
                                     birthday: member.birthday,
                                     time: member.time,
+                                    sex: member.isMale, // Pass sex value here
                                     ),
                                 ),
                               );

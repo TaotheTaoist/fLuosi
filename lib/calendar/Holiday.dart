@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 class Holiday {
   /// 日期，YYYY-MM-DD格式
   String? _day;

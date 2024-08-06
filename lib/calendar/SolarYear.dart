@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'SolarMonth.dart';
 
 /// 阳历年

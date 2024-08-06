@@ -11,6 +11,8 @@
 // import 'package:learn1/calendar/Tao.dart';
 // import 'package:learn1/calendar/util/LunarUtil.dart';
 // import 'package:learn1/calendar/util/SolarUtil.dart';
+// ignore_for_file: constant_identifier_names, prefer_interpolation_to_compose_strings
+
 import 'package:learn1/calendar/EightChar.dart';
 import 'Foto.dart';
 import 'Fu.dart';
@@ -419,6 +421,7 @@ class Lunar {
 
   String getMonthInChinese() =>
       (_month < 0 ? '闰' : '') + LunarUtil.MONTH[_month.abs()];
+  
 
   String getDayInChinese() => LunarUtil.DAY[_day];
 
@@ -426,6 +429,7 @@ class Lunar {
 
   String getTimeGan() => LunarUtil.GAN[_timeGanIndex + 1];
 
+ 
   String getTimeInGanZhi() => '${getTimeGan()}${getTimeZhi()}';
 
   String getSeason() => LunarUtil.SEASON[_month.abs()];
@@ -745,6 +749,14 @@ class Lunar {
   String getDayNaYin() => LunarUtil.NAYIN[getDayInGanZhi()]!;
 
   String getTimeNaYin() => LunarUtil.NAYIN[getTimeInGanZhi()]!;
+
+  String getTimeKongWong() => LunarUtil.KONGWAN[getTimeInGanZhi()]!;
+
+  String getMonthKongWong() => LunarUtil.KONGWAN[getMonthInGanZhi()]!;
+
+  String getDayKongWong() => LunarUtil.KONGWAN[getDayInGanZhi()]!;
+
+  String getYearKongWong() => LunarUtil.KONGWAN[getYearInGanZhi()]!;
 
   List<String> getBaZi() {
     List<String> l = <String>[];

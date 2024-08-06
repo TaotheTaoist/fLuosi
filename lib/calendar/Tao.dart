@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:learn1/Lunar.dart';
 import 'package:learn1/calendar/TaoFestival.dart';
 import 'package:learn1/calendar/util/LunarUtil.dart';

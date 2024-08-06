@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names, unnecessary_new, non_constant_identifier_names
+
 import '../FotoFestival.dart';
 
 /// 佛历工具
